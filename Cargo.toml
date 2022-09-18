@@ -1,0 +1,9 @@
+[package]
+name = "hyprland-barinfo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "~1.0"
+bpaf = "~0.5"
+regex = "~1.6"
