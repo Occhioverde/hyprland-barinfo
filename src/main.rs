@@ -22,8 +22,7 @@ fn main() -> anyhow::Result<()> {
         stream_reader.read_line(&mut line)?;
 
         if let Some(printable_string) = ipcreader.read_line(&line)? {
-            print!("\n{}", printable_string);
-            stdout().flush()?;
+            println!("{}", printable_string);
         }
     }
 }
