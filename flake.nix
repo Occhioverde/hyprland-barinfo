@@ -22,7 +22,7 @@
             pname = "hyprland-barinfo";
             version = "0.1.0";
             src = ./.;
-            cargoSha256 = "sha256-vZE0OhJaYNM9XIKxz6PD+Z0yLS9mYO/YWyqkJAEHEHQ=";
+            cargoSha256 = "sha256-jDUdhSamNN4oJumwb/aE/pK7LSjQZK4XpcSIyw/Uxms=";
           };
         }
     );
