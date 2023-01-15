@@ -14,6 +14,7 @@ pub struct IPCReader {
 
 #[derive(Deserialize, Clone, Debug)]
 struct Monitor {
+    id: usize,
     name: String,
     focused: bool,
     #[serde(alias = "activeWorkspace")]
@@ -44,21 +45,28 @@ impl IPCReader {
                 regexes.push(Regex::new("^destroyworkspace>>(.*)")?);
                 regexes.push(Regex::new("^focusedmon>>(.*),(.*)")?);
 
-                IPCReader::get_monitors()?.iter().enumerate().for_each(|(i, monitor)| {
-                    let mut ws = monitor.workspace.clone();
-                    if i == my_mon {
-                        monitor_name = Some(monitor.name.clone());
-                        if monitor.focused {
-                            ws.status = 1;
+                let monitors = IPCReader::get_monitors()?;
+                monitor_name = Some(monitors.iter().find(|mon| mon.id == my_mon).ok_or(anyhow::anyhow!("Couldn't find the monitor to watch"))?.name.to_owned());
+
+                for ws in IPCReader::get_workspaces()?.iter() {
+                    let mut ws = ws.to_owned();
+                    let ws_monitor = monitors.iter().find(|mon| mon.name.eq(&ws.monitor)).ok_or(anyhow::anyhow!("The workspace is in an unknown monitor!"))?;
+                    if ws_monitor.id == my_mon {
+                        if ws_monitor.workspace.id == ws.id {
+                            if ws_monitor.focused {
+                                ws.status = 1;
+                            } else {
+                                ws.status = 3;
+                            }
                         } else {
-                            ws.status = 3;
+                            ws.status = 2;
                         }
                     } else {
                         ws.status = 0;
                     }
 
                     workspaces.push(ws);
-                });
+                };
             },
         };
 
