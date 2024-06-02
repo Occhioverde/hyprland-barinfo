@@ -1,4 +1,4 @@
-use bpaf::{command, construct, long, pure, Parser};
+use bpaf::{construct, long, pure, Parser};
 
 #[derive(Debug, Clone)]
 pub enum ExecMode {
@@ -17,17 +17,11 @@ pub fn opts() -> Opts {
         .help("The monitor of which you want to track the workspaces")
         .argument::<usize>("MONITOR")
         .to_options();
-    let workspace_command = command(
-        "workspace",
-        monitor,
-    )
+    let workspace_command = monitor.command("workspace")
     .help("Tracks the workspaces's status")
     .map(|monitor: usize| ExecMode::Workspace(monitor));
 
-    let activewindow_command = command(
-        "activewindow",
-        pure(()).to_options(),
-    )
+    let activewindow_command = pure(()).to_options().command("activewindow")
     .help("Tracks the window that is currently selected")
     .map(|_| ExecMode::ActiveWindow);
 

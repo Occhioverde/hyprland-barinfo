@@ -1,13 +1,18 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    crane = {
+      url = "github:ipetkov/crane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, crane, flake-utils }:
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs { inherit system; };
+        craneLib = crane.mkLib pkgs;
       in
         {
           devShell = pkgs.mkShell {
@@ -18,11 +23,10 @@
               pkgs.rust-analyzer
             ];
           };
-          defaultPackage = pkgs.rustPlatform.buildRustPackage {
+          defaultPackage = craneLib.buildPackage {
             pname = "hyprland-barinfo";
-            version = "0.1.0";
-            src = ./.;
-            cargoSha256 = "sha256-zdRWGvHVXiMHm1PJvDaZkfX0ZEmfrflLOk7gG1prYzs=";
+            version = "0.3.0";
+            src = craneLib.cleanCargoSource (craneLib.path ./.);
           };
         }
     );
